@@ -1,0 +1,170 @@
+export type UserRole = 'admin' | 'client';
+
+export type SubscriptionPlan = 'free' | 'premium' | 'premium_plus';
+
+export const PLAN_LIMITS = {
+  free: {
+    chatDaily: 10,
+    codalNotes: 100,
+    aiDeconstruction: 0,
+    noteFolders: 5,
+    noteSubnotes: 10,
+    casesDaily: 5,
+    casesMonthly: 30,
+    practiceDaily: 5 // 🟢 AMENDED: Fixed to 5
+  },
+  premium: {
+    chatDaily: Infinity,
+    codalNotes: 500,
+    aiDeconstruction: 500,
+    noteFolders: 200,
+    noteSubnotes: 150, 
+    casesDaily: 50,
+    casesMonthly: 300,
+    practiceDaily: 20 // 🟢 AMENDED: Fixed to 20
+  },
+  premium_plus: {
+    chatDaily: Infinity,
+    codalNotes: Infinity,
+    aiDeconstruction: Infinity,
+    noteFolders: Infinity,
+    noteSubnotes: Infinity,
+    casesDaily: Infinity,
+    casesMonthly: Infinity,
+    practiceDaily: Infinity
+  }
+};
+
+export interface UserProfile {
+  age?: number;
+  university?: string;
+  state?: string;
+  college?: string;
+  phone?: string;
+  bio?: string;
+}
+
+export interface UserUsage {
+  dailyChatCount: number;
+  dailyCaseCount: number;
+  monthlyCaseCount: number;
+  aiDeconstructionCount: number;
+  dailyPracticeCount: number;
+  lastResetDate: string;        // Format: "2026-04-03"
+  lastMonthlyResetDate: string; // Format: "2026-04"
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  subscription: SubscriptionPlan;
+  avatar?: string;
+  photoURL?: string; 
+  createdAt: string;
+  isActive: boolean;
+  profile?: UserProfile;
+  usage: UserUsage; 
+}
+
+export interface BarQuestion {
+  id: string;
+  subject: string;
+  subsubject: string;
+  question: string;
+  suggestedAnswer: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  createdAt: string;
+}
+
+export interface PracticeAnswer {
+  questionId: string;
+  userId: string;
+  answer: string;
+  score: number;
+  feedback: {
+    answer: string;
+    legalBasis: string;
+    analysis: string;
+    conclusion: string;
+  };
+  submittedAt: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'model'; 
+  content: string;
+  timestamp: string;
+}
+
+export interface CaseDigest {
+  id: string;
+  userId?: string;
+  title: string;
+  grNo: string;
+  date: string;          
+  ponente: string;       
+  topic: string;         
+  facts: string;
+  issues: string;
+  ratio: string;         
+  disposition: string;   
+  doctrines: string;     
+  barRelevance: string;  
+  provisions: string[];
+  tags: string[];
+  createdAt: string;
+}
+
+export interface CodalProvision {
+  id: string;
+  book: string;          
+  articleNumber: string; 
+  title: string;
+  content: string;
+  notes?: string;        
+  linkedCases?: string[];
+  createdAt?: string;    
+  updatedAt?: string;
+  orderIndex?: number;
+  aiAnalysis?: string; 
+  lastAiUpdate?: string; 
+}
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  linkedCases: string[];
+  linkedProvisions: string[];
+  type?: 'general' | 'codal_annotation' | string; 
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ScheduleItem {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  type: 'class' | 'task' | 'exam' | 'review';
+  completed: boolean;
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  activeSubscriptions: number;
+  totalQuestions: number;
+  premiumUsers: number;
+  basicUsers: number;
+}
+
+export interface SubjectCategory {
+  id: string;
+  name: string;
+  subsubjects: string[];
+}

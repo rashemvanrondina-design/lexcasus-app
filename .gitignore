@@ -1,0 +1,31 @@
+# 📦 Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# 🔑 SENSITIVE DATA (CRITICAL)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+firebase-key.json
+lexcasus-server/firebase-key.json
+lexcasus-server/.env
+
+# 🏗️ Build Outputs
+dist/
+build/
+.vercl
+.netlify
+
+# 🪵 Logs & Debugging
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+console.log
+*.log
+
+# 🖥️ System Files
+.DS_Store
+Thumbs.db

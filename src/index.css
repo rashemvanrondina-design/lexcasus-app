@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900 dark:bg-navy-950 dark:text-gray-100 transition-colors duration-200;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  ::selection {
+    @apply bg-gold-500/20 text-navy-900 dark:text-gold-200;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+}
+
+@layer components {
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150;
+  }
+
+  .sidebar-item-active {
+    @apply bg-navy-800 text-white dark:bg-gold-500/10 dark:text-gold-400;
+  }
+
+  .sidebar-item-inactive {
+    @apply text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5;
+  }
+
+  .card {
+    @apply bg-white dark:bg-navy-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-md hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-gold {
+    @apply badge bg-gold-100 text-gold-800 dark:bg-gold-500/10 dark:text-gold-400;
+  }
+
+  .badge-navy {
+    @apply badge bg-navy-100 text-navy-700 dark:bg-navy-500/10 dark:text-navy-300;
+  }
+
+  .badge-green {
+    @apply badge bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-400;
+  }
+
+  .badge-red {
+    @apply badge bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-400;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500 transition-colors text-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-navy-800 dark:bg-gold-500 text-white dark:text-navy-900 font-medium text-sm hover:bg-navy-700 dark:hover:bg-gold-400 transition-colors focus:outline-none focus:ring-2 focus:ring-navy-500/50 dark:focus:ring-gold-500/50 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-navy-800 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-navy-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-gray-900 dark:text-white;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-navy-800 to-gold-600 dark:from-gold-400 dark:to-gold-600;
+  }
+
+  .chat-bubble-user {
+    @apply bg-navy-800 text-white dark:bg-gold-500 dark:text-navy-900 rounded-2xl rounded-br-md px-4 py-3;
+  }
+
+  .chat-bubble-ai {
+    @apply bg-white dark:bg-navy-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-md px-4 py-3;
+  }
+
+  .premium-lock {
+    @apply absolute inset-0 bg-white/60 dark:bg-navy-950/60 backdrop-blur-[1px] flex flex-col items-center justify-center rounded-xl z-10;
+  }
+
+  .glass {
+    @apply bg-white/70 dark:bg-navy-900/70 backdrop-blur-xl;
+  }
+}
+/* --- Tiptap Editor & Prose Overrides --- */
+
+/* 1. Ensure bullets and numbers actually show up */
+.tiptap ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.tiptap ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.tiptap li {
+  margin-bottom: 0.25rem;
+}
+
+/* 2. Style for the Blockquote (Legal Citations) */
+.tiptap blockquote {
+  @apply border-l-4 border-gold-500 bg-gray-50 dark:bg-navy-800/50 py-2 px-4 my-4 italic text-gray-700 dark:text-gray-300;
+}
+
+/* 3. Style for the Headings inside the editor */
+.tiptap h1 { @apply text-2xl font-bold mb-4 mt-6; }
+.tiptap h2 { @apply text-xl font-bold mb-3 mt-5; }
+.tiptap h3 { @apply text-lg font-bold mb-2 mt-4; }
+
+/* 4. Horizontal Rule styling */
+.tiptap hr {
+  @apply border-t-2 border-gray-200 dark:border-navy-800 my-6;
+}
+
+/* 5. Highlight logic (for the saved view) */
+mark {
+  @apply bg-gold-200 dark:bg-gold-500/40 text-navy-900 dark:text-white px-1 rounded-sm;
+}
