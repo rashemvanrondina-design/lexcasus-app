@@ -106,7 +106,7 @@ const PracticeBarPage: React.FC = () => {
       }
 
       // 🔴 UPDATE THIS URL TO YOUR PRODUCTION SERVER WHEN DEPLOYED
-      const response = await fetch('http://localhost:5000/api/grade', {
+      const response = await fetch('[https://lexcasus-backend.onrender.com](https://lexcasus-backend.onrender.com)', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

@@ -140,7 +140,7 @@ const ECodalsPage: React.FC = () => {
     const targetId = `${provision.id}::AI_ANALYSIS`; 
     setIsAnalyzing(provision.id);
     try {
-      const res = await fetch('http://localhost:5000/api/deconstruct', {
+      const res = await fetch('[https://lexcasus-backend.onrender.com](https://lexcasus-backend.onrender.com)', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

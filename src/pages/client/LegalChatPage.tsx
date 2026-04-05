@@ -134,7 +134,7 @@ const LegalChatPage: React.FC = () => {
 
     try {
       // 🟢 SEND TO YOUR NODE.JS BACKEND (Bypassing gemini.ts entirely!)
-      const serverResponse = await fetch('http://localhost:5000/api/chat', {
+      const serverResponse = await fetch('[https://lexcasus-backend.onrender.com](https://lexcasus-backend.onrender.com)', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
