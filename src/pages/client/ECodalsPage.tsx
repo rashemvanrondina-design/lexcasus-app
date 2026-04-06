@@ -5,7 +5,7 @@ import { useCasesStore } from '../../store/casesStore';
 import { useNotesStore } from '../../store/notesStore'; 
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db, auth } from '../../lib/firebase';
-import { collection, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore'; // 🟢 Added doc, updateDoc, increment
+import { collection, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { cn } from '../../lib/utils';
 import {
@@ -140,7 +140,8 @@ const ECodalsPage: React.FC = () => {
     const targetId = `${provision.id}::AI_ANALYSIS`; 
     setIsAnalyzing(provision.id);
     try {
-      const res = await fetch('[https://lexcasus-backend.onrender.com](https://lexcasus-backend.onrender.com)', {
+      // 🟢 FIX: Clean URL with proper /api/deconstruct endpoint
+      const res = await fetch('https://lexcasus-backend.onrender.com/api/deconstruct', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

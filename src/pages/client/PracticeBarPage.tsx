@@ -105,8 +105,8 @@ const PracticeBarPage: React.FC = () => {
         });
       }
 
-      // 🔴 UPDATE THIS URL TO YOUR PRODUCTION SERVER WHEN DEPLOYED
-      const response = await fetch('[https://lexcasus-backend.onrender.com](https://lexcasus-backend.onrender.com)', {
+      // 🟢 FIX: Clean URL with proper /api/practice endpoint
+      const response = await fetch('https://lexcasus-backend.onrender.com/api/practice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -122,7 +122,7 @@ const PracticeBarPage: React.FC = () => {
       setFeedback(aiResult);
     } catch (error) {
       console.error(error);
-      alert("AI grading failed. Please ensure your backend server is running on Port 5000.");
+      alert("AI grading failed. Please ensure your backend server is running.");
       setSubmitted(false);
     } finally {
       setIsGrading(false);

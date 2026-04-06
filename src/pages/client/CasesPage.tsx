@@ -133,7 +133,8 @@ const CasesPage: React.FC = () => {
     setSearchResults([]);
     
     try {
-      const res = await fetch('[https://lexcasus-backend.onrender.com](https://lexcasus-backend.onrender.com)', {
+      // 🟢 FIX: Clean URL with proper /api/search endpoint
+      const res = await fetch('https://lexcasus-backend.onrender.com/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: inputText.trim() })
@@ -164,7 +165,8 @@ const CasesPage: React.FC = () => {
     setGeneratingIdx(index);
     
     try {
-      const res = await fetch('[https://lexcasus-backend.onrender.com](https://lexcasus-backend.onrender.com)', {
+      // 🟢 FIX: Clean URL with proper /api/digest endpoint
+      const res = await fetch('https://lexcasus-backend.onrender.com/api/digest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

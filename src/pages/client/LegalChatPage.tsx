@@ -133,8 +133,8 @@ const LegalChatPage: React.FC = () => {
     history.push({ role: 'user', parts: [{ text: textToSend }] });
 
     try {
-      // 🟢 SEND TO YOUR NODE.JS BACKEND (Bypassing gemini.ts entirely!)
-      const serverResponse = await fetch('[https://lexcasus-backend.onrender.com](https://lexcasus-backend.onrender.com)', {
+      // 🟢 FIX: Clean URL with proper /api/chat endpoint
+      const serverResponse = await fetch('https://lexcasus-backend.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -173,7 +173,7 @@ const LegalChatPage: React.FC = () => {
 
     } catch (error) {
       console.error("Chat Server Connection Error:", error);
-      alert("Atty., I am having trouble connecting to the Chambers. Please ensure port 5000 is running.");
+      alert("Atty., I am having trouble connecting to the Chambers. Please ensure the backend is running.");
     } finally {
       setIsTyping(false);
     }
@@ -287,11 +287,11 @@ const LegalChatPage: React.FC = () => {
                       </div>
                     )}
                     <div className={cn(
-  "prose prose-sm max-w-none text-left",
-  msg.role === 'user' ? "prose-invert text-white" : "dark:prose-invert text-gray-800 dark:text-gray-200"
-)}>
-  <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-</div>
+                      "prose prose-sm max-w-none text-left",
+                      msg.role === 'user' ? "prose-invert text-white" : "dark:prose-invert text-gray-800 dark:text-gray-200"
+                    )}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               ))
