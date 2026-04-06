@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 // 🟢 Import the new Interlocutory Promo Modal
-import PromoModal from '../../components/PromoModal'; 
+import PromoModal from '../../components/modals/PromoModal';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();

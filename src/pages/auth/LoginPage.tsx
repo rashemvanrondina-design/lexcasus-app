@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { sendPasswordResetEmail } from 'firebase/auth';
+import { sendPasswordResetEmail, signInWithEmailAndPassword, sendEmailVerification, signOut } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
 import {
   Scale, Mail, Lock, Eye, EyeOff, ArrowRight, BookOpen, FileText,
@@ -104,15 +104,38 @@ const LoginPage: React.FC = () => {
 
   /* ─── AUTH HANDLERS ─── */
   const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true); setError(null);
+    e.preventDefault(); 
+    if (loading) return;
+    setLoading(true); setError(null);
     try { await sendPasswordResetEmail(auth, forgotEmail); setForgotSent(true); } 
     catch (err: any) { setError(err.message || "Failed to send reset email."); } 
     finally { setLoading(false); }
   };
   const resetForgotFlow = () => { setIsForgotPassword(false); setForgotSent(false); setForgotEmail(''); setError(null); };
 
+  // 🟢 NEW: Handles users stuck in unverified limbo
+  const handleResendVerification = async () => {
+    if (loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      // Temporarily authenticate to fire the verification email
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCred.user);
+      await signOut(auth);
+      setVerificationSent(true);
+    } catch (err: any) {
+      setError("Failed to resend link. Please ensure your password is correct.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true); setError(null);
+    e.preventDefault(); 
+    if (loading) return; // 🟢 SECURITY: Prevents double-clicking duplicate account creation
+    setLoading(true); 
+    setError(null);
     try {
       if (isRegister) {
         const success = await register(name, email, password);
@@ -128,6 +151,7 @@ const LoginPage: React.FC = () => {
   };
 
   const handleGoogleLogin = async () => {
+    if (loading) return;
     setLoading(true); setError(null);
     try {
       const success = await loginWithGoogle();
@@ -462,7 +486,20 @@ const LoginPage: React.FC = () => {
                     <span className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>LexCasus</span>
                   </div>
 
-                  {error && <div className={`mb-6 p-3 rounded-xl flex items-start gap-3 border ${isDark ? 'bg-red-500/10 border-red-500/20' : 'bg-red-50 border-red-200'}`}><AlertCircle className={`w-5 h-5 shrink-0 mt-0.5 ${isDark ? 'text-red-400' : 'text-red-500'}`} /><p className={`text-xs leading-relaxed ${isDark ? 'text-red-200' : 'text-red-700'}`}>{error}</p></div>}
+                  {/* 🟢 ENHANCED ERROR BANNER WITH RESEND VERIFICATION BUTTON */}
+                  {error && (
+                    <div className={`mb-6 p-3 rounded-xl flex flex-col gap-2 border ${isDark ? 'bg-red-500/10 border-red-500/20' : 'bg-red-50 border-red-200'}`}>
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className={`w-5 h-5 shrink-0 mt-0.5 ${isDark ? 'text-red-400' : 'text-red-500'}`} />
+                        <p className={`text-xs leading-relaxed ${isDark ? 'text-red-200' : 'text-red-700'}`}>{error}</p>
+                      </div>
+                      {error.includes("verify your email") && (
+                        <button onClick={handleResendVerification} disabled={loading} className={`text-xs font-bold underline text-left ml-8 transition-opacity ${loading ? 'opacity-50' : 'hover:opacity-80'} ${isDark ? 'text-gold-400' : 'text-gold-600'}`}>
+                          {loading ? 'Sending...' : 'Resend Verification Link'}
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   {verificationSent ? (
                     <div className="text-center space-y-6 py-4">

@@ -19,7 +19,10 @@ import ManageQuestionsPage from './pages/admin/ManageQuestionsPage';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import SubscriptionControlPage from './pages/admin/SubscriptionControlPage';
 import ManageCodalsPage from './pages/admin/ManageCodalsPage';
-import AdminAnnouncementsPage from './pages/admin/AdminAnnouncementsPage'; // 🟢 AMENDMENT: Imported the new Announcements Page
+import AdminAnnouncementsPage from './pages/admin/AdminAnnouncementsPage'; 
+
+// 🟢 AMENDMENT: Import the Promo Modal
+import PromoModal from './components/modals/PromoModal';
 
 // --- GUARDS ---
 
@@ -94,6 +97,9 @@ const App: React.FC = () => {
         v7_relativeSplatPath: true,
       }}
     >
+      {/* 🟢 AMENDMENT: Mount the Promo Modal globally so it can detect user logins */}
+      <PromoModal />
+      
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
@@ -134,7 +140,6 @@ const App: React.FC = () => {
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/admin/subscriptions" element={<SubscriptionControlPage />} />
           <Route path="/admin/codals" element={<ManageCodalsPage />} />
-          {/* 🟢 AMENDMENT: Added Route for the Announcements Page */}
           <Route path="/admin/promos" element={<AdminAnnouncementsPage />} />
         </Route>
 

@@ -8,10 +8,10 @@ import { cn } from '../../lib/utils';
 import {
   Search, Plus, Book, ChevronRight, ChevronDown, BookOpen, Layers, 
   Scale, Trash2, ArrowLeft, Loader2, Sparkles, X, Shield, Gavel, Calendar, 
-  User, Target, BookMarked, Hash, ArrowRight, RotateCcw, Edit3, Save, Link, CheckCircle
+  User, Target, BookMarked, Hash, ArrowRight, RotateCcw, Edit3, Save, Link, CheckCircle,
+  Download // 🟢 IMPORTED DOWNLOAD ICON
 } from 'lucide-react';
 
-// 🟢 NEW IMPORTS: Usage Guard, Modal, and Firebase Accounting
 import { useUsageGuard } from '../../hooks/useUsageGuard';
 import UpgradeModal from '../../components/modals/UpgradeModal';
 import { doc, updateDoc, increment } from 'firebase/firestore';
@@ -20,9 +20,12 @@ import { db } from '../../lib/firebase';
 import ReactQuill from 'react-quill-new';
 import 'react-quill/dist/quill.snow.css';
 
-const TOPICS = ['All', 'Civil Law', 'Criminal Law', 'Remedial Law', 'Constitutional Law', 'Labor Law', 'Commercial Law', 'Taxation Law', 'Legal Ethics', 'Political Law', 'Administrative Law'];
+// 🟢 EXPANDED TOPICS ARRAY TO INCLUDE SPECIFIC SUB-TOPICS
+const TOPICS = [
+  'All', 'Civil Law', 'Criminal Law', 'Remedial Law', 'Constitutional Law', 'Labor Law', 'Commercial Law', 'Taxation Law', 'Legal Ethics',
+  'Property', 'Succession', 'Obligations & Contracts', 'Persons & Family Relations', 'Sales', 'Agency & Partnership', 'Corporation Law', 'Evidence', 'Criminal Procedure', 'Civil Procedure'
+];
 
-// 🟢 Toolbar Options for the Rich Text Editor
 const quillModules = {
   toolbar: [
     ['bold', 'italic', 'underline'],
@@ -37,8 +40,8 @@ const CasesPage: React.FC = () => {
   const { cases, addCase, updateCase, deleteCase, fetchCases, fetchMoreCases, hasMore, loadingMore, loading } = useCasesStore();
   const navigate = useNavigate();
   
-  const { checkAccess } = useUsageGuard(); // 🟢 Deploy the Guard
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false); // 🟢 State for Paywall
+  const { checkAccess } = useUsageGuard(); 
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -49,28 +52,23 @@ const CasesPage: React.FC = () => {
     return () => unsubscribe();
   }, [fetchCases]);
 
-  // 🟢 View States
   const [viewMode, setViewMode] = useState<'library' | 'reader' | 'editor' | 'flashcards'>('library');
   const [expandedCaseId, setExpandedCaseId] = useState<string | null>(null);
   const [selectedCase, setSelectedCase] = useState<any | null>(null);
   
-  // 🟢 Flashcard States
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // 🟢 Dashboard Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTopic, setActiveTopic] = useState('All');
   const [visibleCount, setVisibleCount] = useState(10);
 
-  // 🟢 Editor/Generation State
   const [showAddForm, setShowAddForm] = useState(false);
   const [inputText, setInputText] = useState('');
   const [newTag, setNewTag] = useState('');
   const [newProvision, setNewProvision] = useState('');
   const [selectedCode, setSelectedCode] = useState('Civil Code');
 
-  // 🟢 Discovery Phase States
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [generatingIdx, setGeneratingIdx] = useState<number | null>(null);
@@ -113,6 +111,67 @@ const CasesPage: React.FC = () => {
     setViewMode('flashcards');
   };
 
+  // 🟢 NATIVE PDF DOWNLOAD HANDLER
+  const handleDownloadPDF = (c: any) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Please allow pop-ups to generate the PDF.");
+      return;
+    }
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>${c.title} - Digest</title>
+          <style>
+            body { font-family: 'Times New Roman', Times, serif; line-height: 1.6; padding: 40px; color: #000; max-width: 800px; margin: auto; }
+            h1 { font-size: 22px; text-align: center; margin-bottom: 5px; text-transform: uppercase; }
+            h3 { font-size: 14px; text-align: center; font-weight: normal; margin-top: 0; color: #444; }
+            h4 { font-size: 16px; margin-top: 30px; border-bottom: 2px solid #000; padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+            p, div { font-size: 14px; text-align: justify; }
+            .meta { text-align: center; font-size: 12px; margin-bottom: 40px; font-style: italic; }
+            .tags { margin-top: 40px; font-size: 11px; color: #555; border-top: 1px dashed #ccc; padding-top: 10px; }
+            @media print {
+              @page { margin: 20mm; }
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>${c.title}</h1>
+          <h3>${c.grNo} | ${c.date || 'N/A'}</h3>
+          <div class="meta">Ponente: ${c.ponente || 'N/A'} | Topic: ${c.topic || 'N/A'}</div>
+
+          <h4>Facts</h4>
+          <div>${c.facts || 'No facts provided.'}</div>
+
+          <h4>Issue/s</h4>
+          <div>${c.issues || 'No issues provided.'}</div>
+
+          <h4>Ratio Decidendi</h4>
+          <div>${c.ratio || 'No ruling provided.'}</div>
+
+          ${c.disposition ? `<h4>Disposition</h4><div>${c.disposition}</div>` : ''}
+          ${c.doctrines ? `<h4>Doctrines</h4><div>${c.doctrines}</div>` : ''}
+
+          <div class="tags">
+            <strong>Provisions:</strong> ${(c.provisions || []).join(', ') || 'None'}<br/>
+            <strong>Tags:</strong> ${(c.tags || []).join(', ') || 'None'}
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    // Small delay to ensure styles inject before print dialog opens
+    setTimeout(() => {
+      printWindow.print();
+    }, 300);
+  };
+
   const filteredCases = cases.filter((c: any) => {
     const matchesSearch = (c.title?.toLowerCase() || '').includes(searchQuery.toLowerCase()) || 
                           (c.grNo?.toLowerCase() || '').includes(searchQuery.toLowerCase());
@@ -124,16 +183,12 @@ const CasesPage: React.FC = () => {
 
   const displayedCases = filteredCases.slice(0, visibleCount);
 
-  // ============================================================
-  // 🕵️‍♂️ PHASE 1: DISCOVERY SEARCH
-  // ============================================================
   const handleSearch = async () => {
     if (!inputText.trim()) return;
     setIsSearching(true);
     setSearchResults([]);
     
     try {
-      // 🟢 FIX: Clean URL with proper /api/search endpoint
       const res = await fetch('https://lexcasus-backend.onrender.com/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -152,20 +207,15 @@ const CasesPage: React.FC = () => {
     }
   };
 
-  // ============================================================
-  // ⚖️ PHASE 2: GENERATE DIGEST
-  // ============================================================
   const handleGenerate = async (searchCard: any, index: number) => {
-    // 🟢 ENFORCE THE LAW: Check Case Generation Limits
     if (!checkAccess('casesDaily')) {
       setShowUpgradeModal(true);
-      return; // Intercept before hitting the API
+      return; 
     }
 
     setGeneratingIdx(index);
     
     try {
-      // 🟢 FIX: Clean URL with proper /api/digest endpoint
       const res = await fetch('https://lexcasus-backend.onrender.com/api/digest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -181,7 +231,6 @@ const CasesPage: React.FC = () => {
         throw new Error(aiResponse.error);
       }
 
-      // 🟢 BILLING: Officially record the generated case digest to their daily/monthly limits
       if (user && user.role !== 'admin' && user.email !== 'rashemvanrondina@gmail.com') {
         const userRef = doc(db, 'users', user.id);
         await updateDoc(userRef, {
@@ -310,13 +359,20 @@ const CasesPage: React.FC = () => {
   if (viewMode === 'reader' && selectedCase) {
     return (
       <div className="animate-fade-in max-w-5xl mx-auto space-y-6 pb-12">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
           <button onClick={() => setViewMode('library')} className="text-sm font-bold text-gray-500 hover:text-navy-900 flex items-center gap-2 transition-colors">
             <ArrowLeft size={16}/> Back to My Cases
           </button>
-          <button onClick={() => openFlashcards(selectedCase)} className="btn-primary bg-navy-900 text-gold-500 text-xs px-4 py-2">
-            <Layers size={14} /> Review Flashcards
-          </button>
+          
+          {/* 🟢 ADDED PDF DOWNLOAD & FLASHCARD ACTIONS */}
+          <div className="flex items-center gap-2">
+            <button onClick={() => handleDownloadPDF(selectedCase)} className="btn-secondary text-xs px-4 py-2 border-navy-200 text-navy-700 hover:bg-navy-50">
+              <Download size={14} /> Save as PDF
+            </button>
+            <button onClick={() => openFlashcards(selectedCase)} className="btn-primary bg-navy-900 text-gold-500 text-xs px-4 py-2">
+              <Layers size={14} /> Review Flashcards
+            </button>
+          </div>
         </div>
 
         <div className="card p-10 shadow-2xl bg-white border border-gray-100">
@@ -425,7 +481,6 @@ const CasesPage: React.FC = () => {
 
           <div className="grid grid-cols-1 gap-8">
             
-            {/* 🟢 UPDATED: Top Identity Block with Distinct Labels */}
             <div className="space-y-5 bg-gray-50 p-6 rounded-2xl border border-gray-200">
               <div className="flex items-center gap-2 mb-2">
                 <BookOpen size={16} className="text-gold-500" />
@@ -453,7 +508,6 @@ const CasesPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Rich Text Editors for Document Sections */}
             <div className="space-y-8">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-navy-900 flex items-center gap-2"><div className="w-2 h-2 bg-gold-500 rounded-full"></div> Facts</label>
@@ -553,10 +607,8 @@ const CasesPage: React.FC = () => {
     );
   }
 
-  // 🟢 MAIN LIBRARY VIEW
   return (
     <>
-      {/* 🟢 THE PAYWALL MODAL */}
       <UpgradeModal 
         isOpen={showUpgradeModal} 
         onClose={() => setShowUpgradeModal(false)} 
@@ -588,7 +640,6 @@ const CasesPage: React.FC = () => {
             </div>
           ) : (
             <div className="bg-gold-50/40 border border-gold-200 rounded-xl p-5 space-y-6 animate-fade-in">
-              {/* 🟢 STEP 1: DISCOVERY SEARCH INPUT */}
               <div className="flex items-center gap-3">
                 <input 
                   autoFocus 
@@ -608,7 +659,6 @@ const CasesPage: React.FC = () => {
                 </button>
               </div>
 
-              {/* 🟢 STEP 2: DISCOVERY CARDS RESULTS */}
               {searchResults.length > 0 && (
                 <div className="pt-4 border-t border-gold-200/50 space-y-4 animate-fade-in">
                   <h4 className="text-sm font-bold text-navy-900 uppercase tracking-widest flex items-center gap-2">
@@ -688,7 +738,6 @@ const CasesPage: React.FC = () => {
               );
             })}
 
-            {/* 🟢 HYBRID LOAD MORE BUTTON */}
             {!loading && (visibleCount < filteredCases.length || hasMore) && (
               <div className="flex justify-center pt-8 pb-4">
                 <button 
