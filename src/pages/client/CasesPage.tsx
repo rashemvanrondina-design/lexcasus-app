@@ -9,7 +9,7 @@ import {
   Search, Plus, Book, ChevronRight, ChevronDown, BookOpen, Layers, 
   Scale, Trash2, ArrowLeft, Loader2, Sparkles, X, Shield, Gavel, Calendar, 
   User, Target, BookMarked, Hash, ArrowRight, RotateCcw, Edit3, Save, Link, CheckCircle,
-  Download, Filter // 🟢 IMPORTED FILTER ICON
+  Download, Filter
 } from 'lucide-react';
 
 import { useUsageGuard } from '../../hooks/useUsageGuard';
@@ -64,7 +64,7 @@ const CasesPage: React.FC = () => {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [focusTopic, setFocusTopic] = useState(''); // 🟢 NEW STATE: Target Specific Issue
+  const [focusTopic, setFocusTopic] = useState(''); 
   const [newTag, setNewTag] = useState('');
   const [newProvision, setNewProvision] = useState('');
   const [selectedCode, setSelectedCode] = useState('Civil Code');
@@ -88,7 +88,7 @@ const CasesPage: React.FC = () => {
       doctrines: '', barRelevance: '', provisions: [], tags: [] 
     });
     setInputText('');
-    setFocusTopic(''); // 🟢 Reset focus topic
+    setFocusTopic(''); 
     setNewProvision('');
     setNewTag('');
     setShowAddForm(false);
@@ -218,7 +218,6 @@ const CasesPage: React.FC = () => {
       const res = await fetch('https://lexcasus-backend.onrender.com/api/digest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // 🟢 NEW: Passing the focusTopic to the backend payload
         body: JSON.stringify({ 
           query: searchCard.grNo,
           url: searchCard.links.viewSource,
@@ -247,7 +246,7 @@ const CasesPage: React.FC = () => {
         grNo: aiResponse.grNo || searchCard.grNo || '',
         date: aiResponse.date || '',
         ponente: aiResponse.ponente || '',
-        topic: focusTopic ? `${focusTopic} (${aiResponse.topic})` : (aiResponse.topic || ''), // Set the topic based on focus
+        topic: focusTopic ? `${focusTopic} (${aiResponse.topic})` : (aiResponse.topic || ''), 
         facts: formatForEditor(aiResponse.facts),
         issues: formatForEditor(aiResponse.issues),
         ratio: formatForEditor(aiResponse.ratio),
@@ -389,30 +388,30 @@ const CasesPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-10 mt-8">
+          <div className="space-y-10 mt-8 overflow-hidden">
             <section className="space-y-4">
               <h4 className="font-extrabold text-sm text-gold-600 border-l-4 border-gold-500 pl-4 tracking-widest uppercase">Facts</h4>
-              <div className="text-base leading-relaxed text-gray-700 prose max-w-none" dangerouslySetInnerHTML={{ __html: selectedCase.facts }} />
+              <div className="text-base leading-relaxed text-gray-700 prose max-w-none whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: selectedCase.facts }} />
             </section>
             
             <section className="space-y-4">
               <h4 className="font-extrabold text-sm text-gold-600 border-l-4 border-gold-500 pl-4 tracking-widest uppercase">Issue/s</h4>
-              <div className="text-base leading-relaxed text-gray-700 prose max-w-none" dangerouslySetInnerHTML={{ __html: selectedCase.issues }} />
+              <div className="text-base leading-relaxed text-gray-700 prose max-w-none whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: selectedCase.issues }} />
             </section>
             
             <section className="p-8 bg-navy-50/50 rounded-2xl border-l-4 border-navy-900">
               <h4 className="font-extrabold text-sm text-navy-900 mb-4 tracking-widest uppercase">Ratio Decidendi</h4>
-              <div className="text-base leading-relaxed text-gray-800 prose max-w-none" dangerouslySetInnerHTML={{ __html: selectedCase.ratio }} />
+              <div className="text-base leading-relaxed text-gray-800 prose max-w-none whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: selectedCase.ratio }} />
             </section>
             
             <section className="space-y-4">
               <h4 className="font-extrabold text-sm text-gold-600 border-l-4 border-gold-500 pl-4 tracking-widest uppercase">Disposition</h4>
-              <div className="text-base italic leading-relaxed text-gray-600 prose max-w-none" dangerouslySetInnerHTML={{ __html: selectedCase.disposition }} />
+              <div className="text-base italic leading-relaxed text-gray-600 prose max-w-none whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: selectedCase.disposition }} />
             </section>
             
             <section className="p-8 bg-gold-50/50 rounded-2xl border border-gold-200">
               <h4 className="font-extrabold text-sm text-gold-700 mb-4 tracking-widest uppercase">Doctrines</h4>
-              <div className="text-base leading-relaxed text-gray-800 prose max-w-none" dangerouslySetInnerHTML={{ __html: selectedCase.doctrines }} />
+              <div className="text-base leading-relaxed text-gray-800 prose max-w-none whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: selectedCase.doctrines }} />
             </section>
             
             <div className="pt-8 border-t border-gray-100 flex flex-wrap gap-4">
@@ -508,7 +507,7 @@ const CasesPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-8 overflow-hidden">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-navy-900 flex items-center gap-2"><div className="w-2 h-2 bg-gold-500 rounded-full"></div> Facts</label>
                 <ReactQuill theme="snow" value={formData.facts || ''} onChange={(val: string, delta: any, source: string) => { if (source === 'user') setFormData({...formData, facts: val}) }} modules={quillModules} className="bg-white rounded-lg" />
@@ -659,7 +658,6 @@ const CasesPage: React.FC = () => {
                 </button>
               </div>
 
-              {/* 🟢 NEW FIELD: Target Issue / Focus Topic */}
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gold-200/50">
                 <Filter size={18} className="text-gold-600" />
                 <input 
